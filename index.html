@@ -58,13 +58,24 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
             <div class="p-6 sm:p-8 space-y-6">
-                <!-- Must Arrive By -->
+                <!-- Mode Toggle -->
+                <div class="flex rounded-lg bg-gray-100 p-1 gap-1">
+                    <button id="modeDeparture" class="flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 bg-blue-600 text-white shadow-sm">
+                        Plan Departure
+                    </button>
+                    <button id="modeArrival" class="flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 text-gray-700 hover:text-gray-900">
+                        Plan Arrival
+                    </button>
+                </div>
+
+                <!-- Departure / Arrival DateTime -->
                 <div>
-                    <label for="arriveBy" class="block text-sm font-semibold text-gray-700 mb-2">
+                    <label for="timeInput" id="timeInputLabel" class="block text-sm font-semibold text-gray-700 mb-2">
                         Must Arrive By
                     </label>
-                    <input type="datetime-local" id="arriveBy" 
+                    <input type="datetime-local" id="timeInput" 
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-gray-900">
+                    <p id="timeInputHelp" class="text-xs text-gray-500 mt-1">When the load must be delivered</p>
                 </div>
 
                 <!-- Total Distance -->
@@ -146,9 +157,23 @@
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <h3 class="text-lg font-bold text-green-900 mb-1">Leave By</h3>
+                    <h3 id="resultTitle" class="text-lg font-bold text-green-900 mb-1">Leave By</h3>
                     <p id="resultText" class="text-2xl sm:text-3xl font-bold text-green-700"></p>
                     <p id="resultSubtext" class="text-sm text-green-700 mt-2"></p>
+                </div>
+            </div>
+            <!-- Arrival time row (shown in arrival mode) -->
+            <div id="arrivalTimeRow" class="hidden mt-4 pt-4 border-t border-green-200">
+                <div class="flex items-start gap-3">
+                    <div class="bg-green-400 rounded-full p-1.5">
+                        <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xs font-semibold text-green-700 uppercase tracking-wide">Earliest Arrival</span>
+                        <p id="arrivalTimeText" class="text-lg font-bold text-green-800"></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -177,13 +202,54 @@
     const splitShort = 2;         // 2h split sleeper
     const splitLong = 8;          // 8h split sleeper
 
-    // Initialize datetime to now + 24h
+    // Current mode: 'departure' | 'arrival'
+    let currentMode = 'departure';
+
+    // Mode toggle
+    function setMode(mode) {
+        currentMode = mode;
+        const depBtn = document.getElementById('modeDeparture');
+        const arrBtn = document.getElementById('modeArrival');
+        const label = document.getElementById('timeInputLabel');
+        const help = document.getElementById('timeInputHelp');
+        const calcBtn = document.getElementById('calculateBtn');
+
+        if (mode === 'departure') {
+            depBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 bg-blue-600 text-white shadow-sm';
+            arrBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 text-gray-700 hover:text-gray-900';
+            label.textContent = 'Must Arrive By';
+            help.textContent = 'When the load must be delivered';
+            calcBtn.textContent = 'Calculate Departure';
+            // Reset timeInput to future date
+            initDateTime();
+        } else {
+            arrBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 bg-indigo-600 text-white shadow-sm';
+            depBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 text-gray-700 hover:text-gray-900';
+            label.textContent = 'Leave At';
+            help.textContent = 'When you plan to start driving';
+            calcBtn.textContent = 'Calculate Arrival';
+            // Set timeInput to now for arrival mode
+            setLeaveNow();
+        }
+    }
+
+    document.getElementById('modeDeparture').addEventListener('click', () => setMode('departure'));
+    document.getElementById('modeArrival').addEventListener('click', () => setMode('arrival'));
+
+    // Initialize datetime to now + 24h (departure mode default)
     function initDateTime() {
         const now = new Date();
         now.setHours(now.getHours() + 24);
         now.setMinutes(0, 0, 0);
         const localISOTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-        document.getElementById('arriveBy').value = localISOTime;
+        document.getElementById('timeInput').value = localISOTime;
+    }
+
+    // Set to current time (arrival mode default)
+    function setLeaveNow() {
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset(), 0, 0);
+        document.getElementById('timeInput').value = now.toISOString().slice(0, 16);
     }
 
     // Speed slider update
@@ -430,7 +496,8 @@
 
     // Calculate button handler
     document.getElementById('calculateBtn').addEventListener('click', () => {
-        const arriveBy = new Date(document.getElementById('arriveBy').value);
+        const timeInputVal = document.getElementById('timeInput').value;
+        const timeDate = new Date(timeInputVal);
         const distance = parseFloat(document.getElementById('distance').value);
         const hoursLeft = parseFloat(document.getElementById('hoursLeft').value);
         const avgSpeed = parseFloat(document.getElementById('avgSpeed').value);
@@ -438,8 +505,8 @@
         const useSplit = document.getElementById('useSplit').checked;
         const addBuffer = document.getElementById('addBuffer').checked;
 
-        if (!arriveBy || isNaN(arriveBy.getTime())) {
-            alert('Please enter a valid arrival time');
+        if (!timeDate || isNaN(timeDate.getTime())) {
+            alert('Please enter a valid date/time');
             return;
         }
         if (!distance || distance <= 0) {
@@ -448,32 +515,72 @@
         }
 
         const maxDrive = use11Hour ? 11 : 10;
-
-        const result = findLeaveBy(arriveBy, distance, avgSpeed, hoursLeft, maxDrive, useSplit, addBuffer);
-
-        if (!result.departure || !result.simulation) {
-            alert('Could not calculate a valid departure time. Please check your inputs.');
-            return;
-        }
-
-        // Show result
         const resultBox = document.getElementById('resultBox');
+        const resultTitle = document.getElementById('resultTitle');
         const resultText = document.getElementById('resultText');
         const resultSubtext = document.getElementById('resultSubtext');
+        const arrivalTimeRow = document.getElementById('arrivalTimeRow');
+        const arrivalTimeText = document.getElementById('arrivalTimeText');
 
-        resultText.textContent = formatDateTime(result.departure);
-        
-        const driveHours = formatDuration(result.simulation.totalDriveTime);
-        const splitText = result.simulation.splitUsed ? ' with 8/2 split' : '';
-        const bufferText = addBuffer ? ' including 30-min buffer' : '';
-        resultSubtext.textContent = `${driveHours} driving time${splitText}${bufferText}`;
+        if (currentMode === 'departure') {
+            // Reverse: given deadline, find latest departure
+            const result = findLeaveBy(timeDate, distance, avgSpeed, hoursLeft, maxDrive, useSplit, addBuffer);
+
+            if (!result.departure || !result.simulation) {
+                alert('Could not calculate a valid departure time. Please check your inputs.');
+                return;
+            }
+
+            resultTitle.textContent = 'Leave By';
+            resultText.textContent = formatDateTime(result.departure);
+            
+            const driveHours = formatDuration(result.simulation.totalDriveTime);
+            const splitText = result.simulation.splitUsed ? ' with 8/2 split' : '';
+            const bufferText = addBuffer ? ' including 30-min buffer' : '';
+            resultSubtext.textContent = `${driveHours} driving time${splitText}${bufferText}`;
+
+            // Show arrival (the deadline)
+            arrivalTimeRow.classList.remove('hidden');
+            arrivalTimeText.textContent = formatDateTime(timeDate);
+
+            // Show log
+            const logBox = document.getElementById('logBox');
+            displayLog(result.simulation.log, result.simulation.splitUsed);
+            logBox.classList.remove('hidden');
+
+        } else {
+            // Forward: given departure, calculate arrival
+            let simResult = simulateForward(timeDate, distance, avgSpeed, hoursLeft, maxDrive, useSplit);
+
+            if (!simResult) {
+                alert('Could not calculate arrival. Please check your inputs.');
+                return;
+            }
+
+            // Apply buffer: add 30 min to arrival for safety margin
+            let arrivalTime = new Date(simResult.arrivalTime);
+            if (addBuffer) {
+                arrivalTime = new Date(arrivalTime.getTime() + 0.5 * 60 * 60 * 1000);
+            }
+
+            resultTitle.textContent = 'Earliest Arrival';
+            resultText.textContent = formatDateTime(arrivalTime);
+
+            const driveHours = formatDuration(simResult.totalDriveTime);
+            const splitText = simResult.splitUsed ? ' with 8/2 split' : '';
+            const bufferText = addBuffer ? ' +30min safety margin' : '';
+            resultSubtext.textContent = `Leave ${formatDateTime(timeDate)} — ${driveHours} driving time${splitText}${bufferText}`;
+
+            // Hide arrival sub-row (already shown as main result)
+            arrivalTimeRow.classList.add('hidden');
+
+            // Show log
+            const logBox = document.getElementById('logBox');
+            displayLog(simResult.log, simResult.splitUsed);
+            logBox.classList.remove('hidden');
+        }
 
         resultBox.classList.remove('hidden');
-
-        // Show log
-        const logBox = document.getElementById('logBox');
-        displayLog(result.simulation.log, result.simulation.splitUsed);
-        logBox.classList.remove('hidden');
 
         // Scroll to result
         setTimeout(() => {

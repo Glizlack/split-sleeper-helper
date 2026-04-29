@@ -49,8 +49,14 @@
     /* ══════════ CINEMATIC BACKGROUND ══════════ */
 
     /* 1. Ariana Grande as Glinda — Wicked movie background */
+    .bg-image {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background: url('glinda-bg.jpg') center/cover no-repeat;
+    }
     body {
-        background: #0a0a0f url('https://4kwallpapers.com/images/wallpapers/glinda-pink-3840x2160-24268.jpg') center/cover no-repeat fixed;
+        background: #0a0a0f;
     }
 
     /* 2. Highway road lines — animated dash pattern scrolling upward */
@@ -80,7 +86,7 @@
         position: fixed;
         inset: 0;
         z-index: 0;
-        background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.7) 120%);
+        background: radial-gradient(ellipse at 50% 40%, transparent 35%, rgba(0,0,0,0.4) 120%);
         pointer-events: none;
     }
 
@@ -206,6 +212,8 @@
 </style>
 </head>
 <body class="bg-[#0a0a0f] text-gray-200 min-h-screen">
+    <!-- Wicked background image layer -->
+    <div class="bg-image"></div>
     <!-- Cinematic flares layer -->
     <div class="cinematic-flares"></div>
 

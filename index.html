@@ -45,21 +45,182 @@
         from { opacity: 0; transform: translateX(-10px); }
         to { opacity: 1; transform: translateX(0); }
     }
+
+    /* ══════════ CINEMATIC BACKGROUND ══════════ */
+
+    /* 1. Dark atmosphere base */
+    body {
+        background: #0a0a0f;
+    }
+
+    /* 2. Highway road lines — animated dash pattern scrolling upward */
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 40px,
+            rgba(255, 255, 255, 0.04) 40px,
+            rgba(255, 255, 255, 0.04) 70px
+        );
+        animation: roadLines 8s linear infinite;
+        pointer-events: none;
+    }
+    @keyframes roadLines {
+        from { transform: translateY(0); }
+        to { transform: translateY(110px); }
+    }
+
+    /* 3. Vignette — dark edges, brighter center */
+    body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        background: radial-gradient(ellipse at 50% 40%, transparent 30%, rgba(0,0,0,0.7) 120%);
+        pointer-events: none;
+    }
+
+    /* 4. Floating light flares (CSS-only — moving radial glows) */
+    .cinematic-flares {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+    .cinematic-flares::before {
+        content: '';
+        position: absolute;
+        top: 10%;
+        left: -15%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: flare1 20s ease-in-out infinite;
+    }
+    .cinematic-flares::after {
+        content: '';
+        position: absolute;
+        top: 60%;
+        right: -10%;
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, rgba(99,102,241,0.06) 0%, transparent 70%);
+        border-radius: 50%;
+        animation: flare2 25s ease-in-out infinite;
+    }
+    @keyframes flare1 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(80px, -40px) scale(1.3); }
+        50% { transform: translate(-30px, 60px) scale(0.8); }
+        75% { transform: translate(50px, 20px) scale(1.1); }
+    }
+    @keyframes flare2 {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(-60px, -30px) scale(1.4); }
+        66% { transform: translate(40px, 50px) scale(0.7); }
+    }
+
+    /* 5. Header — darker gradient with glow line underneath */
+    .cinema-header {
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+        border-bottom: 1px solid rgba(99,102,241,0.3);
+        position: relative;
+    }
+    .cinema-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 10%;
+        right: 10%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(99,102,241,0.6), rgba(59,130,246,0.6), rgba(99,102,241,0.6), transparent);
+    }
+
+    /* 6. Content wrapper — bring above background layers */
+    .content-wrapper {
+        position: relative;
+        z-index: 1;
+    }
+
+    /* 7. Card — glassmorphism with subtle glow */
+    .cinema-card {
+        background: rgba(15, 18, 30, 0.85) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(99,102,241,0.15) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.5), 0 0 60px rgba(59,130,246,0.05) !important;
+    }
+    .cinema-card input,
+    .cinema-card label span,
+    .cinema-card .text-gray-700,
+    .cinema-card .text-gray-900 {
+        color: #e2e8f0 !important;
+    }
+    .cinema-card input[type="number"],
+    .cinema-card input[type="datetime-local"] {
+        background: rgba(30,30,50,0.8) !important;
+        border-color: rgba(99,102,241,0.25) !important;
+        color: #e2e8f0 !important;
+    }
+    .cinema-card input[type="number"]:focus,
+    .cinema-card input[type="datetime-local"]:focus {
+        border-color: rgba(99,102,241,0.6) !important;
+        box-shadow: 0 0 12px rgba(99,102,241,0.15) !important;
+    }
+    .cinema-card input[type="range"] {
+        background: rgba(30,30,50,0.8) !important;
+    }
+    .cinema-card .text-xs {
+        color: #94a3b8 !important;
+    }
+
+    /* 8. Result box — cinematic glow */
+    .cinema-result {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.06)) !important;
+        border-color: rgba(16, 185, 129, 0.3) !important;
+        box-shadow: 0 4px 24px rgba(16,185,129,0.06) !important;
+    }
+
+    /* 9. Timeline box */
+    .cinema-timeline {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(99, 102, 241, 0.04)) !important;
+        border-color: rgba(59, 130, 246, 0.25) !important;
+        box-shadow: 0 4px 24px rgba(59,130,246,0.04) !important;
+    }
+
+    /* 10. Mode toggle — dark theme */
+    .cinema-toggle {
+        background: rgba(30,30,50,0.8) !important;
+    }
+
+    /* 11. Checkbox labels */
+    .cinema-card .group:hover span {
+        color: #fff !important;
+    }
 </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg">
+<body class="bg-[#0a0a0f] text-gray-200 min-h-screen">
+    <!-- Cinematic flares layer -->
+    <div class="cinematic-flares"></div>
+
+    <div class="cinema-header shadow-lg">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">Split Sleeper Helper</h1>
             <p class="text-blue-100 mt-1 text-sm sm:text-base">FMCSA-compliant departure planner with 8/2 split</p>
         </div>
     </div>
 
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 content-wrapper">
+        <div class="bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden cinema-card">
             <div class="p-6 sm:p-8 space-y-6">
                 <!-- Mode Toggle -->
-                <div class="flex rounded-lg bg-gray-100 p-1 gap-1">
+                <div class="flex rounded-lg bg-gray-100 p-1 gap-1 cinema-toggle">
                     <button id="modeDeparture" class="flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 bg-blue-600 text-white shadow-sm">
                         Plan Departure
                     </button>
@@ -149,7 +310,7 @@
         </div>
 
         <!-- Result Box -->
-        <div id="resultBox" class="hidden mt-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-500 rounded-xl shadow-lg p-6 fade-in">
+        <div id="resultBox" class="hidden mt-6 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-500 rounded-xl shadow-lg p-6 fade-in cinema-result">
             <div class="flex items-start gap-3">
                 <div class="bg-green-500 rounded-full p-2">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +340,7 @@
         </div>
 
         <!-- Timeline Log Box -->
-        <div id="logBox" class="hidden mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-500 rounded-xl shadow-lg p-6 fade-in">
+        <div id="logBox" class="hidden mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-500 rounded-xl shadow-lg p-6 fade-in cinema-timeline">
             <div class="flex items-center gap-3 mb-4">
                 <div class="bg-blue-500 rounded-full p-2">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -216,7 +377,7 @@
 
         if (mode === 'departure') {
             depBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 bg-blue-600 text-white shadow-sm';
-            arrBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 text-gray-700 hover:text-gray-900';
+            arrBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 text-gray-300 hover:text-white';
             label.textContent = 'Must Arrive By';
             help.textContent = 'When the load must be delivered';
             calcBtn.textContent = 'Calculate Departure';
@@ -224,7 +385,7 @@
             initDateTime();
         } else {
             arrBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 bg-indigo-600 text-white shadow-sm';
-            depBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 text-gray-700 hover:text-gray-900';
+            depBtn.className = 'flex-1 py-2.5 px-4 rounded-md text-sm font-semibold transition-all duration-200 text-gray-300 hover:text-white';
             label.textContent = 'Leave At';
             help.textContent = 'When you plan to start driving';
             calcBtn.textContent = 'Calculate Arrival';

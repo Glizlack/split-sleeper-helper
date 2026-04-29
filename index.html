@@ -228,9 +228,72 @@
     .cinema-card .group:hover span {
         color: #fff !important;
     }
+
+    /* ══════════ SPLASH OVERLAY ══════════ */
+    #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: url('glinda-bg.jpg') center/cover no-repeat;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    #splash.hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+    }
+    #splash::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse at 50% 40%, transparent 40%, rgba(0,0,0,0.35) 100%);
+    }
+    .splash-text {
+        position: relative;
+        z-index: 1;
+        color: #fff;
+        font-size: 1.5rem;
+        font-weight: 600;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+        letter-spacing: 0.05em;
+        animation: splashPulse 2s ease-in-out infinite;
+    }
+    @keyframes splashPulse {
+        0%, 100% { opacity: 0.7; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.03); }
+    }
+    /* Sparkle particles */
+    .sparkle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #fff;
+        border-radius: 50%;
+        animation: sparkleFloat 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+    @keyframes sparkleFloat {
+        0%, 100% { opacity: 0; transform: translateY(0) scale(0); }
+        20% { opacity: 0.9; }
+        50% { opacity: 0.6; transform: translateY(-20px) scale(1.2); }
+        80% { opacity: 0; transform: translateY(-40px) scale(0); }
+    }
 </style>
 </head>
 <body class="bg-[#0a0a0f] text-gray-200 min-h-screen">
+    <!-- Splash overlay — tap to reveal app -->
+    <div id="splash" onclick="this.classList.add('hidden')">
+        <span class="splash-text">✦ Tap anywhere ✦</span>
+        <span class="sparkle" style="top:25%;left:20%;animation-delay:0s"></span>
+        <span class="sparkle" style="top:30%;left:75%;animation-delay:1.2s"></span>
+        <span class="sparkle" style="top:60%;left:15%;animation-delay:0.6s"></span>
+        <span class="sparkle" style="top:55%;left:85%;animation-delay:1.8s"></span>
+        <span class="sparkle" style="top:80%;left:50%;animation-delay:2.4s"></span>
+    </div>
     <!-- Wicked background image layer -->
     <div class="bg-image"></div>
     <!-- Cinematic flares layer -->

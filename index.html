@@ -156,11 +156,11 @@
 
     /* 7. Card — glassmorphism with subtle glow */
     .cinema-card {
-        background: rgba(15, 18, 30, 0.45) !important;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid rgba(99,102,241,0.2) !important;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 60px rgba(59,130,246,0.05) !important;
+        background: rgba(15, 18, 30, 0.25) !important;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(99,102,241,0.15) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 60px rgba(59,130,246,0.04) !important;
     }
     .cinema-card input,
     .cinema-card label span,
@@ -170,29 +170,38 @@
     }
     .cinema-card input[type="number"],
     .cinema-card input[type="datetime-local"] {
-        background: rgba(255,255,255,0.06) !important;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.15) !important;
+        background: transparent !important;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 1px solid rgba(255,255,255,0.2) !important;
         color: #fff !important;
     }
     .cinema-card input[type="number"]:focus,
     .cinema-card input[type="datetime-local"]:focus {
         border-color: rgba(129,140,248,0.6) !important;
-        box-shadow: 0 0 18px rgba(129,140,248,0.2), inset 0 0 8px rgba(129,140,248,0.05) !important;
-        background: rgba(255,255,255,0.1) !important;
+        box-shadow: 0 0 18px rgba(129,140,248,0.2) !important;
+        background: transparent !important;
     }
     .cinema-card input[type="range"] {
-        background: rgba(255,255,255,0.08) !important;
+        background: transparent !important;
     }
 
     /* Labels — lighter for readability over image */
     .cinema-card label {
-        color: #cbd5e1 !important;
-        text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        color: #e2e8f0 !important;
+        text-shadow: 0 1px 6px rgba(0,0,0,0.7);
     }
     .cinema-card .text-xs {
         color: #94a3b8 !important;
+    }
+    /* Helper text under inputs — readable over image */
+    .cinema-card .text-gray-500 {
+        color: #94a3b8 !important;
+        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+    /* Placeholder text */
+    .cinema-card input::placeholder {
+        color: rgba(255,255,255,0.35);
     }
 
     /* 8. Result box — cinematic glow */
@@ -209,11 +218,9 @@
         box-shadow: 0 4px 24px rgba(59,130,246,0.04) !important;
     }
 
-    /* 10. Mode toggle — glass */
+    /* 10. Mode toggle — fully transparent */
     .cinema-toggle {
-        background: rgba(255,255,255,0.06) !important;
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
+        background: transparent !important;
         border: 1px solid rgba(255,255,255,0.1);
     }
 

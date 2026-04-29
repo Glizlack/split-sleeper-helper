@@ -223,12 +223,11 @@
         const log = [];
         let totalDrivingHours = 0;
 
-        // Pre-trip inspection if starting fresh
-        if (hoursLeft >= 13.999) {
-            log.push({ time: new Date(currentTime), event: 'Pre-trip inspection (15 min)', type: 'inspection' });
-            currentTime = new Date(currentTime.getTime() + inspectionTime * 60 * 60 * 1000);
-            dutyClock -= inspectionTime;
-        }
+        // Pre-trip inspection at trip start
+        log.push({ time: new Date(currentTime), event: 'Pre-trip inspection (15 min)', type: 'inspection' });
+        currentTime = new Date(currentTime.getTime() + inspectionTime * 60 * 60 * 1000);
+        dutyClock -= inspectionTime;
+        if (dutyClock < 0) dutyClock = 0;
 
         while (milesRemaining > 0.001) {
             // Check if 30-min break needed
@@ -262,11 +261,26 @@
                     log.push({ time: new Date(currentTime), event: 'Pre-trip inspection (15 min)', type: 'inspection' });
                     currentTime = new Date(currentTime.getTime() + inspectionTime * 60 * 60 * 1000);
                     dutyClock -= inspectionTime;
+                    // If split didn't restore usable duty, force full 10h reset
+                    if (dutyClock <= 0.001) {
+                        log.push({ time: new Date(currentTime), event: 'Split exhausted — 10h reset required', type: 'rest' });
+                        log.push({ time: new Date(currentTime), event: 'Post-trip inspection (15 min)', type: 'inspection' });
+                        currentTime = new Date(currentTime.getTime() + inspectionTime * 60 * 60 * 1000);
+                        dutyClock -= inspectionTime;
+                        log.push({ time: new Date(currentTime), event: '10-hour reset (sleeper berth)', type: 'rest' });
+                        currentTime = new Date(currentTime.getTime() + sleepTime * 60 * 60 * 1000);
+                        log.push({ time: new Date(currentTime), event: 'Pre-trip inspection (15 min)', type: 'inspection' });
+                        currentTime = new Date(currentTime.getTime() + inspectionTime * 60 * 60 * 1000);
+                        dutyClock = maxDuty - inspectionTime;
+                        driveClock = maxDrive;
+                        driveSinceBreak = 0;
+                    }
                     continue;
                 } else {
                     // Full 10h reset
                     log.push({ time: new Date(currentTime), event: 'Post-trip inspection (15 min)', type: 'inspection' });
                     currentTime = new Date(currentTime.getTime() + inspectionTime * 60 * 60 * 1000);
+                    dutyClock -= inspectionTime;
                     
                     log.push({ time: new Date(currentTime), event: '10-hour reset (sleeper berth)', type: 'rest' });
                     currentTime = new Date(currentTime.getTime() + sleepTime * 60 * 60 * 1000);
@@ -306,6 +320,7 @@
         // Post-trip inspection
         log.push({ time: new Date(currentTime), event: 'Post-trip inspection (15 min)', type: 'inspection' });
         currentTime = new Date(currentTime.getTime() + inspectionTime * 60 * 60 * 1000);
+        dutyClock -= inspectionTime;
 
         return {
             arrivalTime: currentTime,
